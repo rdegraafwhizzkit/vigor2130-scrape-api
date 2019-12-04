@@ -1,29 +1,29 @@
-def encode(input_string):
+def encode(unencoded):
     lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
-    output_string = ""
+    encoded = ""
 
     i = 0
 
     while True:
-        chr1 = ord(input_string[i]) if i < len(input_string) else 0
-        chr2 = ord(input_string[i + 1]) if i < len(input_string) - 1 else 0
-        chr3 = ord(input_string[i + 2]) if i < len(input_string) - 2 else 0
+        chr0 = ord(unencoded[i]) if i < len(unencoded) else 0
+        chr1 = ord(unencoded[i + 1]) if i < len(unencoded) - 1 else 0
+        chr2 = ord(unencoded[i + 2]) if i < len(unencoded) - 2 else 0
 
-        enc1 = chr1 >> 2
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4)
-        if chr2 == 0:
-            enc3 = enc4 = 64
-        elif chr3 == 0:
-            enc3 = ((chr2 & 15) << 2)
-            enc4 = 64
+        enc1 = lookup[chr0 >> 2]
+        enc2 = lookup[((chr0 & 3) << 4) | (chr1 >> 4)]
+        if chr1 == 0:
+            enc3 = enc4 = lookup[64]
+        elif chr2 == 0:
+            enc3 = lookup[((chr1 & 15) << 2)]
+            enc4 = lookup[64]
         else:
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6)
-            enc4 = chr3 & 63
+            enc3 = lookup[((chr1 & 15) << 2) | (chr2 >> 6)]
+            enc4 = lookup[chr2 & 63]
 
-        output_string = f'{output_string}{lookup[enc1]}{lookup[enc2]}{lookup[enc3]}{lookup[enc4]}'
+        encoded = f'{encoded}{enc1}{enc2}{enc3}{enc4}'
 
         i = i + 3
-        if i >= len(input_string):
+        if i >= len(unencoded):
             break
 
-    return output_string
+    return encoded

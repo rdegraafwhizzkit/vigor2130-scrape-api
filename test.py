@@ -57,22 +57,4 @@ while True:
             f.write(json.dumps(device))
             f.write('\n')
 
-    time.sleep(1)
-
-# select
-#     computer_name
-# ,   ip_address
-# ,   mac_address
-# ,   tx_rate_kbs
-# ,   rx_rate_kbs
-# ,   sessions
-# ,   to_timestamp(`timestamp`) as `timestamp`
-# from
-#     dfs.scratch.vigor2130
-# where
-#     1=1
-# and computer_name in ('huawei_p8_lite','my-iphone')--,'chromecast','raspberry pi')
-# --or rx_rate_kbs >0 or tx_rate_kbs > 0
-# order by
-#     `timestamp` desc
-# ,   computer_name
+    time.sleep(25)

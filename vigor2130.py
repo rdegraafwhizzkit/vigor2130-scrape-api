@@ -1,5 +1,5 @@
 import requests
-from vigor2130_helpers import encode
+from vigor2130_helpers import encode, LoginException, UnknownStatusException, NotLoggedInException
 
 
 class Vigor2130:
@@ -29,6 +29,7 @@ class Vigor2130:
         self.password = encode(password)
         self.proxies = proxies if proxies is not None else {}
         self.cookies = {}
+        self.logged_in = False
 
     def login(self):
         r = requests.post(
@@ -37,41 +38,51 @@ class Vigor2130:
             allow_redirects=False,
             proxies=self.proxies
         )
+        if r.headers['location'].startswith('/index.htm'):
+            self.cookies = {cookie.name: cookie.value for cookie in r.cookies if cookie.name == 'SESSION_ID_VIGOR'}
+            self.logged_in = True
+        else:
+            self.logged_in = False
+            raise LoginException()
 
-        self.cookies = {cookie.name: cookie.value for cookie in r.cookies if cookie.name == 'SESSION_ID_VIGOR'}
+    def get(self, url, encoding='utf-8'):
 
-    def dhcp_table(self):
+        if not self.logged_in:
+            self.login()
+
         r = requests.get(
-            f'{self.url}/cgi-bin/webstax/stat/grocx_dhcp_status',
+            f'{self.url}{url}',
             cookies=self.cookies,
             allow_redirects=False,
             proxies=self.proxies
         )
+
+        if r.status_code == 200:
+            return r.content.decode(encoding)
+
+        if r.status_code == 302 and r.headers['location'].startswith('/login.htm'):
+            raise NotLoggedInException()
+
+        raise UnknownStatusException()
+
+    def dhcp_table(self):
+
+        content = self.get('/cgi-bin/webstax/stat/grocx_dhcp_status')
 
         return [{'computer_name': z[0].lower(), 'ip_address': z[1], 'mac_address': z[2].lower(),
                  'expire_minutes': int(z[3])} for z in
                 [y.split('/') for y in
-                 [x for x in r.content.decode('utf-8').split('|') if x != '']]]
+                 [x for x in content.split('|') if x != '']]]
 
     def arp_cache(self):
-        r = requests.get(
-            f'{self.url}/cgi-bin/webstax/config/arp_table',
-            cookies=self.cookies,
-            allow_redirects=False,
-            proxies=self.proxies
-        )
+        content = self.get('/cgi-bin/webstax/config/arp_table')
 
         return [{'ip_address': z[0], 'mac_address': z[1].lower()} for z in
                 [y.split('\t') for y in
-                 [x for x in r.content.decode('utf-8').split('\n') if not x.startswith('IP Address')]]]
+                 [x for x in content.split('\n') if not x.startswith('IP Address')]]]
 
     def sessions_table(self):
-        r = requests.get(
-            f'{self.url}/cgi-bin/webstax/stat/session',
-            cookies=self.cookies,
-            allow_redirects=False,
-            proxies=self.proxies
-        )
+        content = self.get('/cgi-bin/webstax/stat/session')
 
         return [{
             'protocol': z[0].lower(),
@@ -82,17 +93,12 @@ class Vigor2130:
             'state': z[3].lower() if len(z) == 4 else ''
         } for z in
             [y.split(' ') for y in
-             [x for x in r.content.decode('utf-8').split('\n')]] if len(z) >= 3]
+             [x for x in content.split('\n')]] if len(z) >= 3]
 
     def data_flow_monitor(self):
-        r = requests.get(
-            f'{self.url}/cgi-bin/webstax/config/dig_datam',
-            cookies=self.cookies,
-            allow_redirects=False,
-            proxies=self.proxies
-        )
+        content = self.get('/cgi-bin/webstax/config/dig_datam')
 
-        ss = r.content.decode('utf-8').split('|')
+        ss = content.split('|')
 
         data_flow_monitor_global = [{'ip_address': z[0], 'nr_sessions': int(z[1]), 'hardware_nat_rate_kbs': int(z[2])}
                                     for z in
@@ -109,13 +115,8 @@ class Vigor2130:
         }
 
     def ip_bind_mac(self):
-        r = requests.get(
-            f'{self.url}/cgi-bin/webstax/config/ipbmac',
-            cookies=self.cookies,
-            allow_redirects=False,
-            proxies=self.proxies
-        )
+        content = self.get('/cgi-bin/webstax/config/ipbmac')
 
         return [{'ip_address': y[0], 'mac_address': y[1].lower(), 'computer_name': y[2].lower()} for y in
                 [x.split(',') for x in
-                 r.content.decode('utf-8').split('/')[2].split('|') if x.strip() != ''] if y[2].strip() != '']
+                 content.split('/')[2].split('|') if x.strip() != ''] if y[2].strip() != '']

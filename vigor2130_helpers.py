@@ -1,3 +1,15 @@
+class LoginException(Exception):
+    pass
+
+
+class UnknownStatusException(Exception):
+    pass
+
+
+class NotLoggedInException(Exception):
+    pass
+
+
 def encode(unencoded):
     lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     encoded = ""

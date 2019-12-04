@@ -1,8 +1,7 @@
-from vigor2130 import Vigor2130
+from vigor2130_helpers import encode
 
-x = Vigor2130('', '', '')
 
-assert x.encode('') == 'AA=='
-assert x.encode('1') == 'MQ=='
-assert x.encode('12') == 'MTI='
-assert x.encode('123') == 'MTIz'
+assert encode('') == 'AA=='
+assert encode('1') == 'MQ=='
+assert encode('12') == 'MTI='
+assert encode('123') == 'MTIz'

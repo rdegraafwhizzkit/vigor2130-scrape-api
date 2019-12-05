@@ -58,9 +58,14 @@ class Vigor2130:
             url (str): Relative url to get
             encoding (str): The encoding to use when interpreting the response body
 
+        Returns:
+            str: The content returned by the get request
+
         Raises:
+            LoginException: Raised if the login attempt was not successful
             NotLoggedInException: Raised if the call was successful but the request got redirected to the login page
             UnknownStatusException: Raised if the call was not successful due to an unknown condition
+
         """
 
         if not self.logged_in:
@@ -91,6 +96,7 @@ class Vigor2130:
                  [x for x in content.split('|') if x != '']]]
 
     def arp_cache(self):
+
         content = self.get('/cgi-bin/webstax/config/arp_table')
 
         return [{'ip_address': z[0], 'mac_address': z[1].lower()} for z in
@@ -98,6 +104,7 @@ class Vigor2130:
                  [x for x in content.split('\n') if not x.startswith('IP Address')]]]
 
     def sessions_table(self):
+
         content = self.get('/cgi-bin/webstax/stat/session')
 
         return [{
@@ -112,18 +119,22 @@ class Vigor2130:
              [x for x in content.split('\n')]] if len(z) >= 3]
 
     def data_flow_monitor(self):
+
         content = self.get('/cgi-bin/webstax/config/dig_datam')
 
         ss = content.split('|')
 
-        data_flow_monitor_global = [{'ip_address': z[0], 'nr_sessions': int(z[1]), 'hardware_nat_rate_kbs': int(z[2])}
-                                    for z in
-                                    [y.split(',') for y in
-                                     [x for x in ss[2].split(';') if x.strip() != '']]]
+        data_flow_monitor_global = [
+            {'ip_address': z[0], 'nr_sessions': int(z[1]), 'hardware_nat_rate_kbs': int(z[2])} for z in
+            [y.split(',') for y in
+             [x for x in ss[2].split(';') if x.strip() != '']]
+        ]
 
-        data_flow_monitor_detailed = [{'ip_address': z[0], 'tx_rate_kbs': int(z[1]), 'rx_rate_kbs': int(z[2])} for z in
-                                      [y.split(',') for y in
-                                       [x for x in ss[3].split(';') if x.strip() != '']]]
+        data_flow_monitor_detailed = [
+            {'ip_address': z[0], 'tx_rate_kbs': int(z[1]), 'rx_rate_kbs': int(z[2])} for z in
+            [y.split(',') for y in
+             [x for x in ss[3].split(';') if x.strip() != '']]
+        ]
 
         return {
             'global': data_flow_monitor_global,
@@ -131,6 +142,7 @@ class Vigor2130:
         }
 
     def ip_bind_mac(self):
+
         content = self.get('/cgi-bin/webstax/config/ipbmac')
 
         return [{'ip_address': y[0], 'mac_address': y[1].lower(), 'computer_name': y[2].lower()} for y in

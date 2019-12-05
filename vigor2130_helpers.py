@@ -1,16 +1,39 @@
 class LoginException(Exception):
+    """Exception that is thrown when wrong credentials have been provided
+
+    """
     pass
 
 
 class UnknownStatusException(Exception):
+    """Exception that is thrown when an unknown status has been return from a requests call
+
+    """
     pass
 
 
 class NotLoggedInException(Exception):
+    """Exception that is thrown when a requests call has been made without being authenticated
+
+    """
+
     pass
 
 
 def encode(unencoded):
+    """Encoding function for the username and password.
+
+    This is an implementation of the Base64 encoding with some minor
+    quirks, like input '' returns 'AA==' while Base64 returns '' in that case. It is a Python implementation for the
+    encode function found in index.htm on the modem
+
+    Args:
+        unencoded (str): unencoded string value
+
+    Returns:
+        str: The 'Base64' encoded string value
+
+    """
     lookup = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
     encoded = ""
 

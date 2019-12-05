@@ -30,7 +30,7 @@ IP Address\t   MAC Address	\n
 
 A newline separated string with space separated records that contain the 
 protocol, source ip address and port, destination ip address and port and the 
-connection state if the protocol is tcp
+connection state if the protocol is tcp.
 
 ```
 tcp 192.168.1.243:50555 1.2.3.4:80 ESTABLISHED\n
@@ -41,6 +41,13 @@ tcp 192.168.1.239:50463 4.5.6.7:53 CLOSE_WAIT\n
 
 /cgi-bin/webstax/config/ipbmac returns
 
+A forward slash separated string with three sections from which the third is returned from a pipe separated string with
+comma separated values holding the ip address, mac address and computer name. Note that there are spare pipes at the end
+of the section.
+
 ```
-TODO
+1/192.168.1.249\n
+192.168.1.240,11:22:33:44:55:66\n
+22:33:44:55:66:77\n
+33:44:55:66:77:88/192.168.1.249,11:22:33:44:55:66,My-iPhone,0|192.168.1.240,22:33:44:55:66:77,Chromecast,0|
 ```

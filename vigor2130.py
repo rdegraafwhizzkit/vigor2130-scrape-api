@@ -32,6 +32,12 @@ class Vigor2130:
         self.logged_in = False
 
     def login(self):
+        """Login function for the Vigor2130 modem
+
+        Raises:
+            LoginException: Raised if the login attempt was not successful
+
+        """
         r = requests.post(
             f'{self.url}/cgi-bin/webstax/login/login',
             data={'aa': self.username, 'ab': self.password},
@@ -46,6 +52,16 @@ class Vigor2130:
             raise LoginException()
 
     def get(self, url, encoding='utf-8'):
+        """Reusable get function to execute a requests get call and interpret the response
+
+        Args:
+            url (str): Relative url to get
+            encoding (str): The encoding to use when interpreting the response body
+
+        Raises:
+            NotLoggedInException: Raised if the call was successful but the request got redirected to the login page
+            UnknownStatusException: Raised if the call was not successful due to an unknown condition
+        """
 
         if not self.logged_in:
             self.login()

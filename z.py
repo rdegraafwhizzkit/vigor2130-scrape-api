@@ -3,7 +3,6 @@ from vigor2130 import Vigor2130
 from pprint import pprint as pp
 import pandas as pd
 
-
 vigor_2130 = Vigor2130(
     url=config['url'],
     username=config['username'],
@@ -17,18 +16,33 @@ vigor_2130 = Vigor2130(
 # pp(vigor_2130.ip_bind_mac())
 # pp(vigor_2130.data_flow_monitor())
 
-df1 = pd.DataFrame(vigor_2130.dhcp_table()).set_index('mac_address', drop=False)
-df2 = pd.DataFrame(vigor_2130.ip_bind_mac()).set_index('mac_address', drop=True)
-df3 = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed']).set_index('ip_address', drop=True)
+df1 = pd.DataFrame(vigor_2130.dhcp_table())
+df2 = pd.DataFrame([x for x in vigor_2130.ip_bind_mac() if x['computer_name'] != 'xklik aan klik uit basestation'])
+df3 = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed'])
 
-pp(df3)
+df = pd.merge(
+    df1,
+    df2,
+    on="mac_address",
+    how="outer"
+).drop(
+    columns='ip_address_y'
+).rename(
+    columns={'ip_address_x': 'ip_address'}
+)
+df = pd.merge(
+    df,
+    df3,
+    on='ip_address',
+    how='outer'
+)
 
-df = df1.merge(df2, left_index=True, right_index=True, how="outer")
-# df.set_index()
-df4 = df.merge(df3, left_index=True, right_index=True, how="outer")
+df['computer_name'] = df.apply(
+    lambda row: row.computer_name_x if pd.isna(row.computer_name_y) else row.computer_name_y, axis=1
+)
 
-# pp(df)
-# pp(df.T.to_dict())
+df = df.drop(
+    columns=['computer_name_x', 'computer_name_y']
+)
 
-# pp(df4)
-pp(df4.T.to_dict())
+pp(df.T.to_dict())

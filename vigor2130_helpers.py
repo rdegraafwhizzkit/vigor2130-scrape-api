@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 class LoginException(Exception):
     """Exception that is thrown when wrong credentials have been provided
 
@@ -62,3 +65,72 @@ def encode(unencoded):
             break
 
     return encoded
+
+
+def get_info(vigor_2130):
+    """Get a summary of the state of clients connected to the Vigor modem.
+
+    Args:
+        vigor_2130 (Vigor2130): A Vigor2130 object
+
+    Returns:
+        iterable: An array with the client state
+
+    """
+    # Load the dhcp table into a pandas dataframe
+    df_dhcp_table = pd.DataFrame(vigor_2130.dhcp_table())
+
+    # Load the mac to ip bind table into a pandas dataframe
+    df_mac_ip = pd.DataFrame(
+        [x for x in vigor_2130.ip_bind_mac() if True or x['computer_name'] != 'klik aan klik uit basestation'])
+
+    # Load the detailed data flow into a pandas dataframe
+    df_dataflow = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed'])
+
+    # Outer join the dhcp table and mac to ip on mac address into a pandas dataframe and fix some columns
+    df = pd.merge(df_dhcp_table, df_mac_ip, on="mac_address", how="outer").drop(
+        columns='ip_address_y'
+    ).rename(
+        columns={'ip_address_x': 'ip_address'}
+    )
+
+    # Outer join the dataflow
+    df = pd.merge(
+        df,
+        df_dataflow,
+        on='ip_address',
+        how='outer'
+    )
+
+    # Find the correct computer_name from the mac_ip table, if not found fill it from the dhcp table
+    df['computer_name'] = df.apply(
+        lambda row: row.computer_name_x if pd.isna(row.computer_name_y) else row.computer_name_y,
+        axis=1
+    )
+
+    df['rx_rate_kbs'] = df.apply(
+        lambda row: -1 if pd.isna(row.rx_rate_kbs) else row.rx_rate_kbs,
+        axis=1
+    )
+
+    df['tx_rate_kbs'] = df.apply(
+        lambda row: -1 if pd.isna(row.tx_rate_kbs) else row.tx_rate_kbs,
+        axis=1
+    )
+
+    df['expire_minutes'] = df.apply(
+        lambda row: -1 if pd.isna(row.expire_minutes) else row.expire_minutes,
+        axis=1
+    )
+
+    df['ip_address'] = df.apply(
+        lambda row: '' if pd.isna(row.ip_address) else row.ip_address,
+        axis=1
+    )
+
+    # Drop unwanted columns
+    df = df.drop(
+        columns=['computer_name_x', 'computer_name_y']
+    )
+
+    return [v for k, v in df.T.to_dict().items()]

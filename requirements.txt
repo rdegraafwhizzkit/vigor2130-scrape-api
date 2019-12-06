@@ -1,3 +1,4 @@
 pysocks
 requests
 pandas
+elasticsearch==7.1.0

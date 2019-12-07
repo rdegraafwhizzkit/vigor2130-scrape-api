@@ -81,26 +81,22 @@ def get_info(vigor_2130):
     df_dhcp_table = pd.DataFrame(vigor_2130.dhcp_table())
 
     # Load the mac to ip bind table into a pandas dataframe
-    df_mac_ip = pd.DataFrame(
-        [x for x in vigor_2130.ip_bind_mac() if True or x['computer_name'] != 'klik aan klik uit basestation'])
+    df_mac_ip = pd.DataFrame([x for x in vigor_2130.ip_bind_mac()])
 
     # Load the detailed data flow into a pandas dataframe
     df_dataflow = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed'])
 
-    # Outer join the dhcp table and mac to ip on mac address into a pandas dataframe and fix some columns
-    df = pd.merge(df_dhcp_table, df_mac_ip, on="mac_address", how="outer").drop(
-        columns='ip_address_y'
-    ).rename(
-        columns={'ip_address_x': 'ip_address'}
+    # Outer join the dhcp table and mac to ip on mac address into a pandas dataframe
+    df = pd.merge(df_dhcp_table, df_mac_ip, on="mac_address", how="outer")
+
+    # Find a filled ip_address. Else if there is no lease we may run into merge trouble later
+    df['ip_address'] = df.apply(
+        lambda row: row.ip_address_x if pd.isna(row.ip_address_y) else row.ip_address_y,
+        axis=1
     )
 
     # Outer join the dataflow
-    df = pd.merge(
-        df,
-        df_dataflow,
-        on='ip_address',
-        how='outer'
-    )
+    df = pd.merge(df, df_dataflow, on='ip_address', how='outer')
 
     # Find the correct computer_name from the mac_ip table, if not found fill it from the dhcp table
     df['computer_name'] = df.apply(
@@ -123,14 +119,20 @@ def get_info(vigor_2130):
         axis=1
     )
 
-    df['ip_address'] = df.apply(
-        lambda row: '' if pd.isna(row.ip_address) else row.ip_address,
+    # Drop unwanted columns
+    df = df.drop(
+        columns=['computer_name_x', 'computer_name_y', 'ip_address_x', 'ip_address_y']
+    )
+
+    # Fix missing data
+    df['computer_name'] = df.apply(
+        lambda row: 'unknown' if pd.isna(row.computer_name) else row.computer_name,
         axis=1
     )
 
-    # Drop unwanted columns
-    df = df.drop(
-        columns=['computer_name_x', 'computer_name_y']
+    df['mac_address'] = df.apply(
+        lambda row: 'unknown' if pd.isna(row.mac_address) else row.mac_address,
+        axis=1
     )
 
     return [v for k, v in df.T.to_dict().items()]

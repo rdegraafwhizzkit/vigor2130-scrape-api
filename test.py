@@ -4,6 +4,8 @@ from conf.config import config
 from vigor2130_helpers import get_info
 import time
 import json
+from elasticsearch import Elasticsearch
+import hashlib
 
 vigor_2130 = Vigor2130(
     url=config['url'],
@@ -11,6 +13,8 @@ vigor_2130 = Vigor2130(
     password=config['password'],
     proxies=config['proxies']
 )
+
+es = Elasticsearch()
 
 while True:
 
@@ -20,7 +24,17 @@ while True:
     with open(f'data/vigor2130-{this_hour}.json', 'a') as f:
         for record in get_info(vigor_2130):
             record.update({'timestamp': seconds_since_epoch})
-            f.write(json.dumps(record))
+            record_json = json.dumps(record)
+            f.write(record_json)
             f.write('\n')
+            try:
+                res = es.index(
+                    index="vigor2130",
+                    doc_type='_doc',
+                    body=record,
+                    id=hashlib.sha224(record_json.encode('utf-8')).hexdigest()
+                )
+            except:
+                print(record_json)
 
     time.sleep(25)

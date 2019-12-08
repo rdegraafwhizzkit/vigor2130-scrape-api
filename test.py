@@ -6,6 +6,7 @@ import time
 import json
 from elasticsearch import Elasticsearch
 import hashlib
+from requests.exceptions import ChunkedEncodingError
 
 vigor_2130 = Vigor2130(
     url=config['url'],
@@ -37,8 +38,10 @@ while True:
                         id=hashlib.sha224(record_json.encode('utf-8')).hexdigest()
                     )
                 except:
-                    print(record_json)
+                    print(f'Index error around {this_hour} for record {record_json}')
     except NotLoggedInException:
-        pass
+        print(f'NotLoggedInException around {this_hour}')
+    except ChunkedEncodingError:
+        print(f'ChunkedEncodingError around {this_hour}')
 
     time.sleep(25)

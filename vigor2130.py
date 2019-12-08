@@ -82,6 +82,7 @@ class Vigor2130:
             return r.content.decode(encoding)
 
         if r.status_code == 302 and r.headers['location'].startswith('/login.htm'):
+            self.logged_in = False
             raise NotLoggedInException()
 
         raise UnknownStatusException()

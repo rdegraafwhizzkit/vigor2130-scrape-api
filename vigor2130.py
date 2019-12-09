@@ -31,6 +31,19 @@ class Vigor2130:
         self.cookies = {}
         self.logged_in = False
 
+    def logout(self):
+        try:
+            requests.get(
+                f'{self.url}/cgi-bin/webstax/login/logout',
+                cookies=self.cookies,
+                allow_redirects=False,
+                proxies=self.proxies
+            )
+        except Exception as ex:
+            print(ex)
+
+        self.logged_in = False
+
     def login(self):
         """Login function for the Vigor2130 modem
 

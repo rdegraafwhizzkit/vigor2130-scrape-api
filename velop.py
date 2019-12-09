@@ -11,7 +11,7 @@ def get_velop_connected_clients():
     for name, ip in velops.items():
         try:
             r = requests.get(
-                f'http://{ip}/sysinfo.cgi',
+                f'http://{ip}/sysinfo.cgi',  # sysinfo_json.cgi also available
                 auth=HTTPBasicAuth(
                     config['velop']['username'],
                     config['velop']['password']
@@ -31,7 +31,7 @@ def get_velop_connected_clients():
                     )
                 if line.startswith('WMM mode'):
                     section = False
-        except:
-            pass
+        except Exception as ex:
+            print(ex)
 
     return connected_clients

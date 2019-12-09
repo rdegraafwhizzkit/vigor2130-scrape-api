@@ -44,6 +44,7 @@ while True:
                         )
                     except:
                         print(f'Index error at {this_time} for record {record_json}')
+        vigor_2130.logout()
     except NotLoggedInException:
         print(f'NotLoggedInException at {this_time}')
     except ChunkedEncodingError:

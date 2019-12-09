@@ -67,11 +67,12 @@ def encode(unencoded):
     return encoded
 
 
-def get_info(vigor_2130):
+def get_info(vigor_2130, velop=None):
     """Get a summary of the state of clients connected to the Vigor modem.
 
     Args:
         vigor_2130 (Vigor2130): A Vigor2130 object
+        velop: QQQ
 
     Returns:
         iterable: An array with the client state
@@ -86,6 +87,9 @@ def get_info(vigor_2130):
     # Load the detailed data flow into a pandas dataframe
     df_dataflow = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed'])
 
+    # Load the velop info
+    df_velop = pd.DataFrame(velop if velop is not None else [])
+
     # Outer join the dhcp table and mac to ip on mac address into a pandas dataframe
     df = pd.merge(df_dhcp_table, df_mac_ip, on="mac_address", how="outer")
 
@@ -97,6 +101,9 @@ def get_info(vigor_2130):
 
     # Outer join the dataflow
     df = pd.merge(df, df_dataflow, on='ip_address', how='outer')
+
+    # Outer join the velop info
+    df = pd.merge(df, df_velop, on='mac_address', how='outer')
 
     # Find the correct computer_name from the mac_ip table, if not found fill it from the dhcp table
     df['computer_name'] = df.apply(
@@ -132,6 +139,16 @@ def get_info(vigor_2130):
 
     df['mac_address'] = df.apply(
         lambda row: 'unknown' if pd.isna(row.mac_address) else row.mac_address,
+        axis=1
+    )
+
+    df['ip_address'] = df.apply(
+        lambda row: 'unknown' if pd.isna(row.ip_address) else row.ip_address,
+        axis=1
+    )
+
+    df['velop'] = df.apply(
+        lambda row: 'unknown' if pd.isna(row.velop) else row.velop,
         axis=1
     )
 

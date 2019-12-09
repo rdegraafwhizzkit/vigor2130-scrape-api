@@ -7,6 +7,8 @@ import json
 from elasticsearch import Elasticsearch
 import hashlib
 from requests.exceptions import ChunkedEncodingError
+import velop
+
 
 vigor_2130 = Vigor2130(
     url=config['url'],
@@ -23,7 +25,9 @@ while True:
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
-        records = get_info(vigor_2130)
+        velop_info = velop.get_velop_connected_clients()
+        records = get_info(vigor_2130, velop_info)
+
         with open(f'data/vigor2130-{this_hour}.json', 'a') as f:
             for record in records:
                 record.update({'timestamp': int(time.time())})
@@ -44,5 +48,7 @@ while True:
         print(f'NotLoggedInException at {this_time}')
     except ChunkedEncodingError:
         print(f'ChunkedEncodingError at {this_time}')
+    except Exception as ex:
+        print(ex)
 
-    time.sleep(25)
+    time.sleep(300)

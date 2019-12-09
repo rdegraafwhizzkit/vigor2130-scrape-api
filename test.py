@@ -15,33 +15,34 @@ vigor_2130 = Vigor2130(
     proxies=config['proxies']
 )
 
-es = Elasticsearch()
+es = Elasticsearch(hosts=config['es']['hosts'])
 
 while True:
 
-    seconds_since_epoch = int(time.time())
-    this_hour = datetime.now().strftime("%Y%m%d%H")
+    this_hour = datetime.now().strftime("%Y%m%d-%H")
+    this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
         records = get_info(vigor_2130)
         with open(f'data/vigor2130-{this_hour}.json', 'a') as f:
             for record in records:
-                record.update({'timestamp': seconds_since_epoch})
+                record.update({'timestamp': int(time.time())})
                 record_json = json.dumps(record)
                 f.write(record_json)
                 f.write('\n')
-                try:
-                    res = es.index(
-                        index="vigor2130",
-                        doc_type='_doc',
-                        body=record,
-                        id=hashlib.sha224(record_json.encode('utf-8')).hexdigest()
-                    )
-                except:
-                    print(f'Index error around {this_hour} for record {record_json}')
+                if config['es']['index_data']:
+                    try:
+                        res = es.index(
+                            index=config['es']['index'],
+                            doc_type=config['es']['doc_type'],
+                            body=record,
+                            id=hashlib.sha224(record_json.encode('utf-8')).hexdigest()
+                        )
+                    except:
+                        print(f'Index error at {this_time} for record {record_json}')
     except NotLoggedInException:
-        print(f'NotLoggedInException around {this_hour}')
+        print(f'NotLoggedInException at {this_time}')
     except ChunkedEncodingError:
-        print(f'ChunkedEncodingError around {this_hour}')
+        print(f'ChunkedEncodingError at {this_time}')
 
     time.sleep(25)

@@ -3,7 +3,18 @@ config = {
     'username': 'username',
     'password': 'password',
     'proxies': {
-        'http': "socks5://localhost:12345",
-        'https': "socks5://localhost:12345"
+        'http': 'socks5://localhost:12345',
+        'https': 'socks5://localhost:12345'
+    },
+    'es': {
+        'index_data': False,
+        'index': 'vigor2130',
+        'doc_type': '_doc',
+        'hosts': [
+            {
+                'host': 'localhost',
+                'port': 9200
+            }
+        ]
     }
 }

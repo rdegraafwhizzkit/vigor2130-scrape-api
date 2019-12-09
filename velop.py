@@ -2,7 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import re
 from conf.config import config
-
+import grequests as qqq
 
 def get_velop_connected_clients():
     velops = config['velop']['velops']
@@ -35,3 +35,23 @@ def get_velop_connected_clients():
             print(ex)
 
     return connected_clients
+
+
+# urls = [
+#     'http://192.168.1.236/sysinfo.cgi?name=living room',
+#     'http://192.168.1.237/sysinfo.cgi?name=hallway',
+#     'http://192.168.1.238/sysinfo.cgi?name=kitchen'
+# ]
+# from pprint import pprint as pp
+# rs = [qqq.get(u, auth=HTTPBasicAuth(
+#                     config['velop']['username'],
+#                     config['velop']['password']
+#                 )) for u in urls]
+#
+# for x in qqq.map(rs, size=3):
+#     pp(x.request.url)
+#     pp(x.content.decode('utf-8'))
+
+
+
+

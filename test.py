@@ -25,7 +25,7 @@ while True:
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
-        velop_info = velop.get_velop_connected_clients()
+        velop_info = [client for client in velop.get_velop_connected_clients()]
         records = get_info(vigor_2130, velop_info)
 
         with open(f'data/vigor2130-{this_hour}.json', 'a') as f:

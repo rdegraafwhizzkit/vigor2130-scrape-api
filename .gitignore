@@ -106,3 +106,4 @@ venv.bak/
 data/
 .idea/
 conf/config.py
+.DS_Store

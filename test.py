@@ -1,4 +1,5 @@
 from vigor2130 import Vigor2130
+from velop import Velop
 from datetime import datetime
 from conf.config import config
 from vigor2130_helpers import get_info, NotLoggedInException
@@ -7,13 +8,18 @@ import json
 from elasticsearch import Elasticsearch
 import hashlib
 from requests.exceptions import ChunkedEncodingError
-import velop
-
 
 vigor_2130 = Vigor2130(
     url=config['url'],
-    username=config['username'],
-    password=config['password'],
+    username=config['vigor']['username'],
+    password=config['vigor']['password'],
+    proxies=config['vigor']['proxies']
+)
+
+velop = Velop(
+    velops=config['velop']['velops'],
+    username=config['velop']['username'],
+    password=config['velop']['password'],
     proxies=config['proxies']
 )
 
@@ -25,7 +31,7 @@ while True:
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
-        velop_info = [client for client in velop.get_velop_connected_clients()]
+        velop_info = [client for client in velop.get_connected_clients()]
         records = get_info(vigor_2130, velop_info)
 
         with open(f'data/vigor2130-{this_hour}.json', 'a') as f:

@@ -1,10 +1,12 @@
 config = {
-    'url': 'http://192.168.1.254',
-    'username': 'username',
-    'password': 'password',
     'proxies': {
         'http': 'socks5://localhost:12345',
         'https': 'socks5://localhost:12345'
+    },
+    'vigor':{
+        'url': 'http://192.168.1.254',
+        'username': 'username',
+        'password': 'password'
     },
     'es': {
         'index_data': False,
@@ -17,7 +19,7 @@ config = {
             }
         ]
     },
-    'velop':{
+    'velop': {
         'velops': {
             'velop1': '192.168.1.10',
             'velop2': '192.168.1.20',
@@ -25,5 +27,13 @@ config = {
         },
         'username':'username',
         'password':'password',
+    },
+    'ics2000': {
+        'mac_address': 'AABBCCDDEEFF',
+        'email_address':'a@b.c',
+        'password':'password',
+        'kWhHighPrice': 0.219294,
+        'kWhLowPrice': 0.219294,
+        'gassM3Price': 0.669761
     }
 }

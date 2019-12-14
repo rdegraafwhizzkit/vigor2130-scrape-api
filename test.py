@@ -29,6 +29,7 @@ ics2000 = ICS2000(
     proxies=config['proxies']
 )
 
+# TODO: change timestamp to epoch seconds
 if False:
     ics2000_info = [o for o in ICS2000(
         mac_address=config['ics2000']['mac_address'],

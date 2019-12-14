@@ -2,7 +2,7 @@ from requests.auth import HTTPBasicAuth
 import re
 from conf.config import config
 import grequests as gr
-
+import time
 
 class Velop:
     def __init__(self, velops, username, password, proxies=None):
@@ -12,6 +12,8 @@ class Velop:
         self.proxies = proxies if proxies is not None else {}
 
     def get_connected_clients(self):
+
+        timestamp = int(time.time())
 
         rs = [gr.get(
             f'http://{ip}/sysinfo.cgi',
@@ -34,7 +36,8 @@ class Velop:
                     elif section and re.compile('[a-f0-9:]{17}', re.I).search(line) is not None:
                         yield {
                             'mac_address': re.sub(r'^.*([a-f0-9:]{17}).*$', r'\1', line),
-                            'velop': name
+                            'velop': name,
+                            'timestamp': timestamp
                         }
 
                     if line.startswith('WMM mode'):

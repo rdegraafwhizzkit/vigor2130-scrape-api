@@ -10,10 +10,10 @@ import hashlib
 from requests.exceptions import ChunkedEncodingError
 
 vigor_2130 = Vigor2130(
-    url=config['url'],
+    url=config['vigor']['url'],
     username=config['vigor']['username'],
     password=config['vigor']['password'],
-    proxies=config['vigor']['proxies']
+    proxies=config['proxies']
 )
 
 velop = Velop(

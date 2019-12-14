@@ -1,4 +1,4 @@
-from vigor2130_helpers import encode
+from helper.vigor2130_helpers import encode
 import base64
 
 assert encode('') == 'AA=='  # Not Base64

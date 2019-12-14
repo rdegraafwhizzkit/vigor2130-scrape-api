@@ -31,7 +31,7 @@ class ICS2000:
 
         return r.json()
 
-    def create_objects(self):
+    def get_info(self):
         end = datetime.now()
         start = end - timedelta(days=1)
         prev_kwh_high = -1
@@ -47,9 +47,9 @@ class ICS2000:
                 if not first:
                     reading = {
                         'timestamp': start.strftime("%Y-%m-%d %H:00:00"),
-                        'kWhHigh': kwh_high,
-                        'kWhLow': kwh_low,
-                        'm3Gass': m3_gass,
+                        'kWhHighReading': kwh_high,
+                        'kWhLowReading': kwh_low,
+                        'm3GassReading': m3_gass,
                         'kWhHighUsage': kwh_high - prev_kwh_high,
                         'kWhLowUsage': kwh_low - prev_kwh_low,
                         'm3GassUsage': m3_gass - prev_m3_gass
@@ -67,13 +67,3 @@ class ICS2000:
                 prev_kwh_low = kwh_low
                 prev_m3_gass = m3_gass
                 first = False
-
-
-if __name__ == "__main__":
-    ics2000 = [o for o in ICS2000(
-        mac_address=config['ics2000']['mac_address'],
-        email_address=config['ics2000']['email_address'],
-        password=config['ics2000']['password'],
-        proxies=config['proxies']
-    ).create_objects()]
-    print(ics2000)

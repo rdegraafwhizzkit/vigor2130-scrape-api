@@ -1,18 +1,17 @@
-from vigor2130 import Vigor2130
-from velop import Velop
-from datetime import datetime
+from device.vigor2130 import Vigor2130
+from device.velop import Velop
+from device.ics2000 import ICS2000
 from conf.config import config
-from vigor2130_helpers import get_info, NotLoggedInException
+from helper.vigor2130_helpers import get_info, NotLoggedInException
+from datetime import datetime
 import time
-import json
-from elasticsearch import Elasticsearch
-import hashlib
 from requests.exceptions import ChunkedEncodingError
+from target.es import index_objects
 
 vigor_2130 = Vigor2130(
-    url=config['vigor']['url'],
-    username=config['vigor']['username'],
-    password=config['vigor']['password'],
+    url=config['vigor2130']['url'],
+    username=config['vigor2130']['username'],
+    password=config['vigor2130']['password'],
     proxies=config['proxies']
 )
 
@@ -23,33 +22,48 @@ velop = Velop(
     proxies=config['proxies']
 )
 
-es = Elasticsearch(hosts=config['es']['hosts'])
+ics2000 = ICS2000(
+    mac_address=config['ics2000']['mac_address'],
+    email_address=config['ics2000']['email_address'],
+    password=config['ics2000']['password'],
+    proxies=config['proxies']
+)
+
+if False:
+    ics2000_info = [o for o in ICS2000(
+        mac_address=config['ics2000']['mac_address'],
+        email_address=config['ics2000']['email_address'],
+        password=config['ics2000']['password'],
+        proxies=config['proxies']
+    ).get_info()]
+
+    index_objects(
+        index=config['ics2000']['index'],
+        objects=ics2000_info
+    )
+
+    print(ics2000_info)
+
+index_objects(
+    index=config['velop']['index'],
+    objects=[client for client in velop.get_connected_clients()]
+)
+
+exit(1)
 
 while True:
 
-    this_hour = datetime.now().strftime("%Y%m%d-%H")
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
         velop_info = [client for client in velop.get_connected_clients()]
         records = get_info(vigor_2130, velop_info)
 
-        with open(f'data/vigor2130-{this_hour}.json', 'a') as f:
-            for record in records:
-                record.update({'timestamp': int(time.time())})
-                record_json = json.dumps(record)
-                f.write(record_json)
-                f.write('\n')
-                if config['es']['index_data']:
-                    try:
-                        res = es.index(
-                            index=config['es']['index'],
-                            doc_type=config['es']['doc_type'],
-                            body=record,
-                            id=hashlib.sha224(record_json.encode('utf-8')).hexdigest()
-                        )
-                    except:
-                        print(f'Index error at {this_time} for record {record_json}')
+        if config['vigor2130']['index_data']:
+            index_objects(
+                index=config['vigor2130']['index'],
+                objects=records
+            )
         vigor_2130.logout()
     except NotLoggedInException:
         print(f'NotLoggedInException at {this_time}')

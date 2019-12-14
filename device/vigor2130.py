@@ -1,5 +1,5 @@
 import requests
-from vigor2130_helpers import encode, LoginException, UnknownStatusException, NotLoggedInException
+from helper.vigor2130_helpers import encode, LoginException, UnknownStatusException, NotLoggedInException
 
 
 class Vigor2130:

@@ -1,4 +1,5 @@
 import pandas as pd
+import time
 
 
 class LoginException(Exception):
@@ -149,6 +150,12 @@ def get_info(vigor_2130, velop=None):
 
     df['velop'] = df.apply(
         lambda row: 'unknown' if pd.isna(row.velop) else row.velop,
+        axis=1
+    )
+
+    timestamp = int(time.time())
+    df['timestamp'] = df.apply(
+        lambda row: timestamp,
         axis=1
     )
 

@@ -6,7 +6,8 @@ from helper.vigor2130_helpers import get_info, NotLoggedInException
 from datetime import datetime
 import time
 from requests.exceptions import ChunkedEncodingError
-from target.es import index_objects
+from target.es import index_objects, sha224
+from device.owm import OWM
 
 vigor_2130 = Vigor2130(
     url=config['vigor2130']['url'],
@@ -29,8 +30,23 @@ ics2000 = ICS2000(
     proxies=config['proxies']
 )
 
+owm = OWM(
+    url=config['owm']['url'],
+    id=config['owm']['id'],
+    app_id=config['owm']['appid'],
+    units=config['owm']['units']
+
+)
+
+if True:
+    index_objects(
+        index=config['owm']['index'],
+        objects=owm.get_owm(),
+        id_function=lambda x: sha224(x['timestamp'])
+    )
+
 # TODO: change timestamp to epoch seconds
-if False:
+if True:
     ics2000_info = [o for o in ICS2000(
         mac_address=config['ics2000']['mac_address'],
         email_address=config['ics2000']['email_address'],
@@ -40,19 +56,17 @@ if False:
 
     index_objects(
         index=config['ics2000']['index'],
-        objects=ics2000_info
+        objects=ics2000_info,
+        id_function=lambda x: sha224(x['timestamp'])
     )
 
-    print(ics2000_info)
+if True:
+    index_objects(
+        index=config['velop']['index'],
+        objects=[client for client in velop.get_connected_clients()]
+    )
 
-index_objects(
-    index=config['velop']['index'],
-    objects=[client for client in velop.get_connected_clients()]
-)
-
-exit(1)
-
-while True:
+if True:
 
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -73,4 +87,4 @@ while True:
     except Exception as ex:
         print(ex)
 
-    time.sleep(600)
+    # time.sleep(600)

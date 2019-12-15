@@ -41,5 +41,15 @@ config = {
         'kWhHighPrice': 0.219294,
         'kWhLowPrice': 0.219294,
         'gassM3Price': 0.669761
+    },
+    'owm':{
+        'index_data': True,
+        'index': 'owm',
+        'doc_type': '_doc',
+        'url':'http://api.openweathermap.org/data/2.5/weather',
+        'id':'2759794',
+        'units':'metric',
+        'appid': 'your_app_id',
+        'timezone': 'Europe/Amsterdam'
     }
 }

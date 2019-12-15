@@ -1,13 +1,12 @@
 from device.vigor2130 import Vigor2130
 from device.velop import Velop
 from device.ics2000 import ICS2000
+from device.owm import OWM
 from conf.config import config
 from helper.vigor2130_helpers import get_info, NotLoggedInException
 from datetime import datetime
-import time
 from requests.exceptions import ChunkedEncodingError
 from target.es import index_objects, sha224
-from device.owm import OWM
 
 vigor_2130 = Vigor2130(
     url=config['vigor2130']['url'],
@@ -41,7 +40,7 @@ owm = OWM(
 if True:
     index_objects(
         index=config['owm']['index'],
-        objects=owm.get_owm(),
+        objects=owm.get_info(),
         id_function=lambda x: sha224(x['timestamp'])
     )
 
@@ -63,7 +62,7 @@ if True:
 if True:
     index_objects(
         index=config['velop']['index'],
-        objects=[client for client in velop.get_connected_clients()]
+        objects=[client for client in velop.get_info()]
     )
 
 if True:
@@ -71,7 +70,7 @@ if True:
     this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     try:
-        velop_info = [client for client in velop.get_connected_clients()]
+        velop_info = [client for client in velop.get_info()]
         records = get_info(vigor_2130, velop_info)
 
         if config['vigor2130']['index_data']:

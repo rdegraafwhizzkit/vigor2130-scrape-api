@@ -11,8 +11,8 @@ class ICS2000:
         self.password = password
         self.proxies = proxies if proxies is not None else {}
 
-    def get_p1(self, start_date, end_date):
-        r = requests.get(
+    def get_response(self, start_date, end_date):
+        return requests.get(
             'https://trustsmartcloud2.com/ics2000_api/p1.php',
             allow_redirects=False,
             proxies=self.proxies,
@@ -27,9 +27,7 @@ class ICS2000:
                 'interpolate': 'true',
                 'email': self.email_address
             }
-        )
-
-        return r.json()
+        ).json()
 
     def get_info(self):
         end = datetime.now()
@@ -39,7 +37,7 @@ class ICS2000:
         prev_m3_gass = -1
         first = True
 
-        for x in self.get_p1(start, end):
+        for x in self.get_response(start, end):
             if x[0] is not None and x[1] is not None and x[4] is not None:
                 kwh_high = x[0] / 1000
                 kwh_low = x[1] / 1000

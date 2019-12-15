@@ -1,6 +1,5 @@
 from requests.auth import HTTPBasicAuth
 import re
-from conf.config import config
 import grequests as gr
 import time
 
@@ -11,7 +10,10 @@ class Velop:
         self.password = password
         self.proxies = proxies if proxies is not None else {}
 
-    def get_connected_clients(self):
+    def get_response(self):
+        pass
+
+    def get_info(self):
 
         timestamp = int(time.time())
 
@@ -44,12 +46,3 @@ class Velop:
                         section = False
             except AttributeError:
                 pass
-
-
-if __name__ == "__main__":
-    print([x for x in Velop(
-        velops=config['velop']['velops'],
-        username=config['velop']['username'],
-        password=config['velop']['password'],
-        proxies=config['proxies']
-    ).get_connected_clients()])

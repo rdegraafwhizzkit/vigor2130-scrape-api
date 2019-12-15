@@ -1,6 +1,4 @@
-from conf.config import config
 import requests
-from datetime import datetime, timedelta
 
 
 class OWM:
@@ -12,8 +10,8 @@ class OWM:
         self.units = units
         self.proxies = proxies if proxies is not None else {}
 
-    def get_owm(self):
-        r = requests.get(
+    def get_response(self):
+        return requests.get(
             url=self.url,
             params={
                 'id': self.id,
@@ -21,6 +19,9 @@ class OWM:
                 'units': self.units
             }
         ).json()
+
+    def get_info(self):
+        r = self.get_response()
 
         r.update({
             'timestamp': r['dt'],
@@ -53,4 +54,4 @@ class OWM:
         r.pop('clouds')
         r.pop('id')
 
-        return r
+        return [r]

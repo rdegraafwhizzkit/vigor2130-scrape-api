@@ -80,13 +80,13 @@ def get_info(vigor_2130, velop=None):
 
     """
     # Load the dhcp table into a pandas dataframe
-    df_dhcp_table = pd.DataFrame(vigor_2130.dhcp_table())
+    df_dhcp_table = pd.DataFrame(vigor_2130.get_dhcp_leases())
 
     # Load the mac to ip bind table into a pandas dataframe
-    df_mac_ip = pd.DataFrame([x for x in vigor_2130.ip_bind_mac()])
+    df_mac_ip = pd.DataFrame([x for x in vigor_2130.get_mac_ip_bind()])
 
     # Load the detailed data flow into a pandas dataframe
-    df_dataflow = pd.DataFrame(vigor_2130.data_flow_monitor()['detailed'])
+    df_dataflow = pd.DataFrame(vigor_2130.get_detailed_dataflow())
 
     # Load the velop info
     df_velop = pd.DataFrame(velop if velop is not None else [])

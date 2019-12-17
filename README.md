@@ -51,3 +51,9 @@ of the section.
 22:33:44:55:66:77\n
 33:44:55:66:77:88/192.168.1.249,11:22:33:44:55:66,My-iPhone,0|192.168.1.240,22:33:44:55:66:77,Chromecast,0|
 ```
+
+virtualenv -p python3 --no-site-packages venv
+. venv/bin/activate
+pip install -r requirements.txt
+python test.py
+

@@ -94,3 +94,21 @@ def get_joined_data(vigor_2130, velop=None):
     )
 
     return [v for k, v in df.T.to_dict().items()]
+
+
+def dict_path_value(d, path, default=None):
+    """Get a value in a dict using a dot separated path to the key.
+
+    Args:
+        d (dict): The dict to search in
+        path (str): The dot separated path to traverse
+        default (object): The default value to return if the path could not be traversed
+
+    Returns:
+        any : The value for the requested key, if present
+
+    """
+    steps = path.split('.')
+    for i, step in enumerate(steps):
+        d = d.get(step, default) if i == len(steps) - 1 else d.get(step, {})
+    return d

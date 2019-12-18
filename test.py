@@ -8,46 +8,48 @@ from device.ics2000 import ICS2000
 from device.owm import OWM
 from conf.config import config
 from helper.vigor2130_helpers import NotLoggedInException
-from helper.global_helpers import get_joined_data
+from helper.global_helpers import get_joined_data, dict_path_value as dpv
 from datetime import datetime
 from requests.exceptions import ChunkedEncodingError
 from target.es import index_objects, sha224
 
+proxies = dpv(config, 'proxies')
+
 vigor_2130 = Vigor2130(
-    url=config['vigor2130']['url'],
-    username=config['vigor2130']['username'],
-    password=config['vigor2130']['password'],
-    proxies=config['proxies']
+    url=dpv(config, 'vigor2130.url'),
+    username=dpv(config, 'vigor2130.username'),
+    password=dpv(config, 'vigor2130.password'),
+    proxies=proxies
 )
 
 velop = Velop(
-    velops=config['velop']['velops'],
-    username=config['velop']['username'],
-    password=config['velop']['password'],
-    proxies=config['proxies']
+    velops=dpv(config, 'velop.velops'),
+    username=dpv(config, 'velop.username'),
+    password=dpv(config, 'velop.password'),
+    proxies=proxies
 )
 
 ics2000 = ICS2000(
-    mac_address=config['ics2000']['mac_address'],
-    email_address=config['ics2000']['email_address'],
-    password=config['ics2000']['password'],
-    proxies=config['proxies']
+    mac_address=dpv(config, 'ics2000.mac_address'),
+    email_address=dpv(config, 'ics2000.email_address'),
+    password=dpv(config, 'ics2000.password'),
+    proxies=proxies
 )
 
 owm = OWM(
-    url=config['owm']['url'],
-    id=config['owm']['id'],
-    app_id=config['owm']['appid'],
-    units=config['owm']['units']
-
+    url=dpv(config, 'owm.url'),
+    id=dpv(config, 'owm.id'),
+    app_id=dpv(config, 'owm.appid'),
+    units=dpv(config, 'owm.units'),
+    proxies=proxies
 )
 
 # OWM
 print('OWM')
-if config['owm']['index_data']:
+if dpv(config, 'owm.index_data', False):
     try:
         index_objects(
-            index=config['owm']['index'],
+            index=dpv(config, 'owm.index'),
             objects=owm.get_info(),
             id_function=lambda x: sha224(x['timestamp'])
         )
@@ -56,16 +58,11 @@ if config['owm']['index_data']:
 
 # ICS2000
 print('ICS2000')
-if config['ics2000']['index_data']:
+if dpv(config, 'ics2000.index_data', False):
     try:
         index_objects(
-            index=config['ics2000']['index'],
-            objects=[o for o in ICS2000(
-                mac_address=config['ics2000']['mac_address'],
-                email_address=config['ics2000']['email_address'],
-                password=config['ics2000']['password'],
-                proxies=config['proxies']
-            ).get_info()],
+            index=dpv(config, 'ics2000.index'),
+            objects=[o for o in ics2000.get_info()],
             id_function=lambda x: sha224(x['timestamp'])
         )
     except Exception as ex:
@@ -78,19 +75,19 @@ this_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 try:
     velop_info = [client for client in velop.get_info()]
 
-    if config['vigor2130']['index_data']:
+    if dpv(config, 'vigor2130.index_data', False):
         index_objects(
-            index=config['vigor2130']['index'],
+            index=dpv(config, 'vigor2130.index'),
             objects=get_joined_data(vigor_2130, velop_info)
         )
     vigor_2130.logout()
 
     # Velop
     print('Velop')
-    if config['velop']['index_data']:
+    if dpv(config, 'velop.index_data', False):
         try:
             index_objects(
-                index=config['velop']['index'],
+                index=dpv(config, 'velop.index'),
                 objects=velop_info
             )
         except Exception as ex:

@@ -8,6 +8,7 @@ from helper.global_helpers import dict_path_value as dpv
 import pandas as pd
 from pprint import pprint as pp
 from chunker import get_velop_info
+from target.es import index_objects
 
 proxies = dpv(config, 'proxies')
 
@@ -34,4 +35,12 @@ df = pd.merge(
     columns=['ip_address', 'mac_address']
 )
 
-pp(df)
+pp(df.to_dict(orient='records'))
+if dpv(config, 'velop.index_data', False):
+    try:
+        index_objects(
+            index=dpv(config, 'velop.index'),
+            objects=df.to_dict(orient='records')
+        )
+    except Exception as ex:
+        print(str(ex))

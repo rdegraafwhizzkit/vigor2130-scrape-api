@@ -1,5 +1,5 @@
 from helper.vigor2130_helpers import encode
-from helper.global_helpers import dpv
+from helper.global_helpers import dict_path_value as dpv
 import base64
 
 assert encode('') == 'AA=='  # Not Base64

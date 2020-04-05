@@ -57,3 +57,9 @@ virtualenv -p python3 --no-site-packages venv
 pip install -r requirements.txt
 python test.py
 
+. venv/bin/activate
+cd ~/Downloads
+curl -O https://dev.mysql.com/get/Downloads/Connector-Python/mysql-connector-python-8.0.19.tar.gz
+tar zxf mysql-connector-python-8.0.19.tar.gz
+cd mysql-connector-python-8.0.19
+python setup.py install

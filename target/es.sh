@@ -24,8 +24,5 @@
 # OWM
 #curl -XDELETE http://localhost:9200/owm
 #curl -XPUT http://localhost:9200/owm
-#curl -XPUT http://localhost:9200/owm/_mapping \
-#-H "Content-Type: application/json" \
-#--data '{"properties":{"timestamp":{"type":"date","format":"epoch_second"},"sunrise":{"type":"date","format":"epoch_second"},"sunset":{"type":"date","format":"epoch_second"},"name":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"weather_main":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"weather_description":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"country":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"lon":{"type":"double"},"lat":{"type":"double"},"wind_speed":{"type":"double"},"temp":{"type":"double"},"feels_like":{"type":"double"},"temp_min":{"type":"double"},"temp_max":{"type":"double"},"visibility":{"type":"long"},"timezone":{"type":"long"},"pressure":{"type":"long"},"humidity":{"type":"long"},"wind_deg":{"type":"long"},"clouds_all":{"type":"long"}}}'
-
+#curl -XPUT http://localhost:9200/owm/_mapping -H "Content-Type: application/json" --data-binary "@owm-mapping.json"
 

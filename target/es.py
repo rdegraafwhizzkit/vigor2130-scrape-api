@@ -1,20 +1,7 @@
 from elasticsearch import Elasticsearch
 from json import dumps
-import hashlib
 from conf.config import config
-
-
-def sha224(o, encoding='utf-8'):
-    if type(o) == dict:
-        return hashlib.sha224(dumps(o).encode(encoding)).hexdigest()
-    elif type(o) == str:
-        return hashlib.sha224(o.encode(encoding)).hexdigest()
-    elif type(o) == int:
-        return hashlib.sha224(str(o).encode(encoding)).hexdigest()
-    elif type(o) == float:
-        return hashlib.sha224(str(o).encode(encoding)).hexdigest()
-    else:
-        raise Exception('SHA224 for {} not found'.format(str(type(o))))
+from helper.global_helpers import sha224
 
 
 def index_objects(index, objects, doc_type='_doc', id_function=lambda x: sha224(x)):

@@ -1,0 +1,103 @@
+{
+	"properties": {
+		"timestamp": {
+			"type": "date",
+			"format": "epoch_second"
+		},
+		"sunrise": {
+			"type": "date",
+			"format": "epoch_second"
+		},
+		"sunset": {
+			"type": "date",
+			"format": "epoch_second"
+		},
+		"name": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"weather_main": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"weather_description": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"country": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"wind_direction": {
+			"type": "text",
+			"fields": {
+				"keyword": {
+					"type": "keyword",
+					"ignore_above": 256
+				}
+			}
+		},
+		"wind_beaufort": {
+			"type": "long"
+		},
+		"lon": {
+			"type": "double"
+		},
+		"lat": {
+			"type": "double"
+		},
+		"wind_speed": {
+			"type": "double"
+		},
+		"temp": {
+			"type": "double"
+		},
+		"feels_like": {
+			"type": "double"
+		},
+		"temp_min": {
+			"type": "double"
+		},
+		"temp_max": {
+			"type": "double"
+		},
+		"visibility": {
+			"type": "long"
+		},
+		"timezone": {
+			"type": "long"
+		},
+		"pressure": {
+			"type": "long"
+		},
+		"humidity": {
+			"type": "long"
+		},
+		"wind_deg": {
+			"type": "long"
+		},
+		"clouds_all": {
+			"type": "long"
+		}
+	}
+}

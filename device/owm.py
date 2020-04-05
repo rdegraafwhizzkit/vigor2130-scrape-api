@@ -30,7 +30,9 @@ class OWM:
             'lon': r['coord']['lon'],
             'lat': r['coord']['lat'],
             'wind_speed': r['wind']['speed'],
+            'wind_beaufort': OWM.ms_to_beaufort(float(r['wind']['speed'])),
             'wind_deg': r['wind']['deg'],
+            'wind_direction': OWM.degree_to_description(float(r['wind']['deg'])),
             'country': r['sys']['country'],
             'sunrise': r['sys']['sunrise'],
             'sunset': r['sys']['sunset'],
@@ -55,3 +57,17 @@ class OWM:
         r.pop('id')
 
         return [r]
+
+    @staticmethod
+    # B = (W/0.836)^2/3
+    def ms_to_beaufort(w: float):
+        return round(pow(w / 0.836, 2 / 3))
+
+    @staticmethod
+    # W = 0.836B^3/2
+    def beaufort_to_ms(b: float):
+        return 0.836 * pow(b, 3 / 2)
+
+    @staticmethod
+    def degree_to_description(d: float):
+        return {0: 'N', 1: 'NW', 2: 'W', 3: 'SW', 4: 'S', 5: 'SE', 6: 'E', 7: 'NE', }.get(int((d + 22.5) / 45) % 8)

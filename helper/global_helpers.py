@@ -1,5 +1,7 @@
 import pandas as pd
 import time
+import hashlib
+from json import dumps
 
 
 def get_joined_data(vigor_2130, velop=None):
@@ -112,3 +114,16 @@ def dict_path_value(d, path, default=None):
     for i, step in enumerate(steps):
         d = d.get(step, default) if i == len(steps) - 1 else d.get(step, {})
     return d
+
+
+def sha224(o, encoding='utf-8'):
+    if type(o) == dict:
+        return hashlib.sha224(dumps(o).encode(encoding)).hexdigest()
+    elif type(o) == str:
+        return hashlib.sha224(o.encode(encoding)).hexdigest()
+    elif type(o) == int:
+        return hashlib.sha224(str(o).encode(encoding)).hexdigest()
+    elif type(o) == float:
+        return hashlib.sha224(str(o).encode(encoding)).hexdigest()
+    else:
+        raise Exception('SHA224 for {} not found'.format(str(type(o))))

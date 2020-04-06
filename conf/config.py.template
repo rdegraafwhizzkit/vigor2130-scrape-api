@@ -50,6 +50,7 @@ config = {
         'id':'2759794',
         'units':'metric',
         'appid': 'your_app_id',
-        'timezone': 'Europe/Amsterdam'
+        'timezone': 'Europe/Amsterdam',
+        'sleep': 3000
     }
 }

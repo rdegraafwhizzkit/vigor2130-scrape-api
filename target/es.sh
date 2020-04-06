@@ -1,28 +1,42 @@
 #!/bin/bash
 
+VIGOR2130=0
+ICS2000=0
+VELOP=0
+OWM=0
+
 # Vigor 2130
-#curl -XDELETE http://localhost:9200/vigor2130
-#curl -XPUT http://localhost:9200/vigor2130
-#curl -XPUT http://localhost:9200/vigor2130/_mapping \
-#-H "Content-Type: application/json" \
-#--data '{"properties":{"velop":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"computer_name":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"expire_minutes":{"type":"float"},"ip_address":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"mac_address":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"rx_rate_kbs":{"type":"float"},"timestamp":{"type":"date","format":"epoch_second"},"tx_rate_kbs":{"type":"float"}}}'
+if [ ${VIGOR2130} == 1 ]; then
+  curl -XDELETE http://localhost:9200/vigor2130
+  curl -XPUT http://localhost:9200/vigor2130
+  curl -XPUT http://localhost:9200/vigor2130/_mapping \
+    -H "Content-Type: application/json" \
+    --data-binary "@vigor2130-mapping.json"
+fi
 
 # ICS 2000
-#curl -XDELETE http://localhost:9200/ics2000
-#curl -XPUT http://localhost:9200/ics2000
-#curl -XPUT http://localhost:9200/ics2000/_mapping \
-#-H "Content-Type: application/json" \
-#--data '{"properties":{"timestamp":{"type":"date","format":"yyyy-MM-dd HH:mm:ss"},"kWhHighReading":{"type":"double"},"kWhLowReading":{"type":"double"},"m3GassReading":{"type":"double"},"kWhHighUsage":{"type":"double"},"kWhLowUsage":{"type":"double"},"m3GassUsage":{"type":"double"},"kWhHighCost":{"type":"double"},"kWhLowCost":{"type":"double"},"m3GassCost":{"type":"double"}}}'
+if [ ${ICS2000} == 1 ]; then
+  curl -XDELETE http://localhost:9200/ics2000
+  curl -XPUT http://localhost:9200/ics2000
+  curl -XPUT http://localhost:9200/ics2000/_mapping \
+    -H "Content-Type: application/json" \
+    --data-binary "@ics2000-mapping.json"
+fi
 
 # Velop
-#curl -XDELETE http://localhost:9200/velop
-#curl -XPUT http://localhost:9200/velop
-#curl -XPUT http://localhost:9200/velop/_mapping \
-#-H "Content-Type: application/json" \
-#--data '{"properties":{"velop":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"mac_address":{"type":"text","fields":{"keyword":{"type":"keyword","ignore_above":256}}},"timestamp":{"type":"date","format":"epoch_second"}}}'
+if [ ${VELOP} == 1 ]; then
+  curl -XDELETE http://localhost:9200/velop
+  curl -XPUT http://localhost:9200/velop
+  curl -XPUT http://localhost:9200/velop/_mapping \
+    -H "Content-Type: application/json" \
+    --data-binary "@velop-mapping.json"
+fi
 
 # OWM
-#curl -XDELETE http://localhost:9200/owm
-#curl -XPUT http://localhost:9200/owm
-#curl -XPUT http://localhost:9200/owm/_mapping -H "Content-Type: application/json" --data-binary "@owm-mapping.json"
-
+if [ ${OWM} == 1 ]; then
+  curl -XDELETE http://localhost:9200/owm
+  curl -XPUT http://localhost:9200/owm
+  curl -XPUT http://localhost:9200/owm/_mapping \
+    -H "Content-Type: application/json" \
+    --data-binary "@owm-mapping.json"
+fi

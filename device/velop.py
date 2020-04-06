@@ -3,6 +3,7 @@ import re
 import grequests as gr
 import time
 
+
 class Velop:
     def __init__(self, velops, username, password, proxies=None):
         self.velops = velops

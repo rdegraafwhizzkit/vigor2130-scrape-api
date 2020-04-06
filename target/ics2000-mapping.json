@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "timestamp": {
+      "type": "date",
+      "format": "yyyy-MM-dd HH:mm:ss"
+    },
+    "kWhHighReading": {
+      "type": "double"
+    },
+    "kWhLowReading": {
+      "type": "double"
+    },
+    "m3GassReading": {
+      "type": "double"
+    },
+    "kWhHighUsage": {
+      "type": "double"
+    },
+    "kWhLowUsage": {
+      "type": "double"
+    },
+    "m3GassUsage": {
+      "type": "double"
+    },
+    "kWhHighCost": {
+      "type": "double"
+    },
+    "kWhLowCost": {
+      "type": "double"
+    },
+    "m3GassCost": {
+      "type": "double"
+    }
+  }
+}

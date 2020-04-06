@@ -2,7 +2,7 @@ from device.owm import OWM
 from helper.global_helpers import dict_path_value as dpv
 from conf.config import config
 from target.es import index_objects, sha224
-from time import sleep, time
+from time import sleep
 
 
 proxies = dpv(config, 'proxies')
@@ -27,4 +27,4 @@ if dpv(config, 'owm.index_data', False):
         except Exception as ex:
             print(str(ex))
 
-        sleep(3000)
+        sleep(dpv(config, 'owm.sleep'))

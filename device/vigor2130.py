@@ -1,4 +1,7 @@
 import requests
+import datetime
+import re
+
 from helper.vigor2130_helpers import encode, LoginException, UnknownStatusException, NotLoggedInException
 
 
@@ -19,6 +22,7 @@ class Vigor2130:
     sessions_path = '/cgi-bin/webstax/stat/session'
     dataflow_path = '/cgi-bin/webstax/config/dig_datam'
     ip_mac_bind_path = '/cgi-bin/webstax/config/ipbmac'
+    system_log_path = '/cgi-bin/webstax/stat/syslog'
 
     def __init__(self, url, username, password, proxies=None):
         """Init function for the Vigor2130 class
@@ -170,3 +174,30 @@ class Vigor2130:
             [x.split(',') for x in
              self.get(self.ip_mac_bind_path).split('/')[2].split('|') if x.strip() != ''] if y[2].strip() != ''
         ]
+
+    def get_system_log(self):
+        now = datetime.datetime.now()
+        current_month = now.month
+        current_year = now.year
+
+        for line in self.get(self.system_log_path).split('\n'):
+            if len(line.strip()) > 0:
+                parts = re.sub(
+                    r'^([a-zA-Z0-9 :]{15}) ([^ ]+) ([a-zA-Z0-9]+)\.([a-zA-Z]+) ([^:]*):(.*)$',
+                    r'\1\t\3\t\4\t\5\t\6',
+                    line
+                ).split('\t')
+                try:
+                    year = current_year - 1 if 'Dec' in parts[0] and current_month == 1 else current_year
+                    yield {
+                        'timestamp': int(datetime.datetime.strptime(
+                            f'{year} {parts[0].strip()}',
+                            '%Y %B %d %H:%M:%S'
+                        ).timestamp()),
+                        'source': parts[1].strip(),
+                        'level': parts[2].strip(),
+                        'daemon': parts[3].strip(),
+                        'message': parts[4].strip()
+                    }
+                except IndexError as e:
+                    raise Exception(f'Could not parse line {line}')

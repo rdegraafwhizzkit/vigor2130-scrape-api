@@ -4,6 +4,7 @@ VIGOR2130=0
 ICS2000=0
 VELOP=0
 OWM=0
+SYSLOG=1
 
 # Vigor 2130
 if [ ${VIGOR2130} == 1 ]; then
@@ -39,4 +40,13 @@ if [ ${OWM} == 1 ]; then
   curl -XPUT http://localhost:9200/owm/_mapping \
     -H "Content-Type: application/json" \
     --data-binary "@owm-mapping.json"
+fi
+
+# SYSLOG
+if [ ${SYSLOG} == 1 ]; then
+  curl -XDELETE http://localhost:9200/syslog
+  curl -XPUT http://localhost:9200/syslog
+  curl -XPUT http://localhost:9200/syslog/_mapping \
+    -H "Content-Type: application/json" \
+    --data-binary "@syslog-mapping.json"
 fi

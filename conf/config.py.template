@@ -52,5 +52,11 @@ config = {
         'appid': 'your_app_id',
         'timezone': 'Europe/Amsterdam',
         'sleep': 3000
+    },
+    'syslog': {
+        'index_data': True,
+        'index': 'syslog',
+        'doc_type': '_doc',
+        'sleep': 60
     }
 }

@@ -23,6 +23,7 @@ class Vigor2130:
     dataflow_path = '/cgi-bin/webstax/config/dig_datam'
     ip_mac_bind_path = '/cgi-bin/webstax/config/ipbmac'
     system_log_path = '/cgi-bin/webstax/stat/syslog'
+    traffic_control_path = '/cgi-bin/webstax/config/acl_traffic_edit'
 
     def __init__(self, url, username, password, proxies=None):
         """Init function for the Vigor2130 class
@@ -73,6 +74,19 @@ class Vigor2130:
         else:
             self.logged_in = False
             raise LoginException()
+
+    def post(self, url, data):
+
+        if not self.logged_in:
+            self.login()
+
+        return requests.post(
+            f'{self.url}{url}',
+            data=data,
+            cookies=self.cookies,
+            allow_redirects=False,
+            proxies=self.proxies
+        )
 
     def get(self, url, encoding='utf-8'):
         """Reusable get function to execute a requests get call and interpret the response
@@ -201,3 +215,22 @@ class Vigor2130:
                     }
                 except IndexError as e:
                     raise Exception(f'Could not parse line {line}')
+
+    def block_ip(self, ip: str):
+        return self.post(
+            url=self.traffic_control_path,
+            data={
+                'iRuleEn': '1', 'sRuleNm': f'block-{ip.replace(".", "-")}',
+                'sSrc': 'wan', 'sDes': 'lan',
+                'sPro': 'tcpudp', 'sp_start': '',
+                'sp_end': '', 'dp_start': '',
+                'dp_end': '', 'sSrcIp': ip,
+                'sDesIp': '', 'txtMac1': '',
+                'txtMac2': '', 'txtMac3': '',
+                'txtMac4': '', 'txtMac5': '',
+                'txtMac6': '', 'sTarget': 'DROP',
+                'sTimeProf': '-1', 'idx': '-1',
+                'sp': '', 'dp': '',
+                'sSrcMac': ''
+            }
+        ).status_code

@@ -3,4 +3,4 @@ requests
 grequests
 pandas
 elasticsearch==7.1.0
-mysql-connector-python==8.0.19
+mysql-connector-python==9.1.0
